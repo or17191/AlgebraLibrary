@@ -6,7 +6,6 @@
 #include <string>
 #include <stdexcept>
 
-//note
 template <typename T>
 class matrix
 {
