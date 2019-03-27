@@ -31,27 +31,27 @@ public:
 	vector<T> transpose() const ;
 
 	template<typename F>
-	void map(const F& f);
+	void map(const F& f); //Not implemented
 
 	bool operator==(const vector<T>& other) const;
 	bool operator!=(const vector<T>& other) const;
 
-	vector<T> operator+(const vector<T>& other) const;
-	vector<T>& operator+=(const vector<T>& other);
+	vector<T> operator+(const vector<T>& other) const; //Not implemented
+	vector<T>& operator+=(const vector<T>& other); //Not implemented
 
-	vector<T> operator-() const;
-	vector<T> operator-(const vector<T>& other) const;
-	vector<T>& operator-=(const vector<T>& other);
+	vector<T> operator-() const; //Not implemented 
+	vector<T> operator-(const vector<T>& other) const; //Not implemented
+	vector<T>& operator-=(const vector<T>& other); //Not implemented
 
 
-	vector<T> operator*(const matrix<T>& mat) const;
+	vector<T> operator*(const matrix<T>& mat) const; 
 	vector<T>& operator*=(const matrix<T>& mat);
 
-	vector<T> operator*(const T& a) const;
-	vector<T>& operator*=(const T& a);
+	vector<T> operator*(const T& a) const; //Not implemented
+	vector<T>& operator*=(const T& a); //Not implemented
 
-	void read_JSON(std::istream& IS);
-	void write_JSON(std::ostream& OS) const;
+	void read_JSON(std::istream& IS); //Not implemented
+	void write_JSON(std::ostream& OS) const; //Not implemented
 };
 
 
@@ -70,6 +70,22 @@ const T& vector<T>::operator()(size_t i) const { return arr[i]; }
 template<typename T> 
 T& vector<T>::operator()(size_t i) { return arr[i]; }
 
+template<typename T>
+vector<T> vector<T>::operator*(const matrix<T>& mat) const{
+	if(is_column_vector() || size() != mat.rows()) throw std::invalid_argument("matrix and vector dimensions doesn't agree");
+	vector<T> res(mat.columns(),false,0);
+	for(int i = 0; i < mat.rows(); ++i)
+		for(int j = 0; j < mat.columns(); ++j)
+			res(j) += self(i)*mat(i,j);
+	return res;
+}
+
+template<typename T>
+vector<T>& vector<T>::operator*=(const matrix<T>& mat) {
+	if(is_column_vector() || size() != mat.rows()) throw std::invalid_argument("matrix and vector dimensions doesn't agree");
+	self = self * mat;
+	return self;
+}
 
 
 template<typename T>
@@ -137,11 +153,7 @@ std::ostream& operator<<(std::ostream& out,const vector<T>& m) {
 	return out << to_string(m);
 }
 
-
-
 template<typename T>
-vector<T> cross(const vector<T>& a, const vector<T>& b);
-
-
+vector<T> cross(const vector<T>& a, const vector<T>& b); //Not implemented
 
 #endif

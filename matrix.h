@@ -38,12 +38,12 @@ public:
 	void map(const F& f);
 
 	void gaussian_elimination() ;
-	void gram_schmidt();
-	void LLL();
+	void gram_schmidt(); //Not implemented
+	void LLL(); //Not implemented
 
 	T det() const;
-	matrix<T> invert() const; 
-	T trace() const;
+	matrix<T> invert() const; //Not implemented
+	T trace() const; //Not implemented
 
 	bool operator==(const matrix<T>& other) const;
 	bool operator!=(const matrix<T>& other) const;
@@ -63,8 +63,8 @@ public:
 	matrix<T> operator*(const T& a) const;
 	matrix<T>& operator*=(const T& a);
 
-	void read_JSON(std::istream& IS);
-	void write_JSON(std::ostream& OS) const;
+	void read_JSON(std::istream& IS); //Not implemented
+	void write_JSON(std::ostream& OS) const; //Not implemented
 };
 
 
