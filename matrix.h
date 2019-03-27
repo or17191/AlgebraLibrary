@@ -18,7 +18,7 @@ class matrix
 	std::vector<T> arr;
 public:
 
-	matrix(size_t rows,size_t columns);
+	matrix(size_t rows,size_t columns, const T& x = 0);
 
 	matrix(const std::vector<std::vector<T> >& _arr);
 
@@ -29,8 +29,6 @@ public:
 
     inline T& operator()(size_t i, size_t j) ;
 
-
-
 	matrix<T> transpose() const ;
 
 	bool is_upper_triangular() const;
@@ -40,6 +38,9 @@ public:
 	void map(const F& f);
 
 	void gaussian_elimination() ;
+	void gram_schmidt();
+	void LLL();
+
 	T det() const;
 	matrix<T> invert() const; 
 	T trace() const;
@@ -58,9 +59,25 @@ public:
 	matrix<T>& operator*=(const matrix<T>& other);
 
 	vector<T> operator*(const vector<T>& vec) const;
+
 	matrix<T> operator*(const T& a) const;
 	matrix<T>& operator*=(const T& a);
+
+	void read_JSON(std::istream& IS);
+	void write_JSON(std::ostream& OS) const;
 };
+
+
+template<typename T>
+vector<T> matrix<T>::operator*(const vector<T>& vec) const{
+	if(!vec.is_column_vector() || columns() != vec.size()) throw std::invalid_argument("matrix and vector dimensions doesn't agree");
+	vector<T> res(rows(),0);
+	for(int i = 0; i < rows(); ++i)
+		for(int j = 0; j < columns(); ++j)
+			res(i) += self(i,j)*vec(j);
+	return res;
+}
+
 
 template<typename T>
 matrix<T>& matrix<T>::operator+=(const matrix<T>& other){
@@ -72,7 +89,7 @@ matrix<T>& matrix<T>::operator+=(const matrix<T>& other){
 }
 
 template<typename T>
-matrix<T>::operator+(const matrix<T>& other) const{
+matrix<T> matrix<T>::operator+(const matrix<T>& other) const{
 	if(columns() != other.columns() || rows() != other.rows()) throw std::invalid_argument("matrixes must have same shapes");
 	auto res = self;
 	res += other;
@@ -89,8 +106,19 @@ matrix<T>& matrix<T>::operator-=(const matrix<T>& other){
 	return self;
 }
 
+
+
 template<typename T>
-matrix<T>::operator-(const matrix<T>& other) const{
+matrix<T> matrix<T>::operator-() const{
+	auto res = self;
+	for(int i = 0; i < rows(); ++i)
+		for(int j = 0; j < columns(); ++j)
+			res(i,j) = -res(i,j);
+	return res;
+}
+
+template<typename T>
+matrix<T> matrix<T>::operator-(const matrix<T>& other) const{
 	if(columns() != other.columns() || rows() != other.rows()) throw std::invalid_argument("matrixes must have same shapes");
 	auto res = self;
 	res -= other;
@@ -105,8 +133,28 @@ matrix<T>& matrix<T>::operator*=(const T& a){
 	return self;
 }
 
+
 template<typename T>
-matrix<T>::operator*(const T& a) const{
+matrix<T> matrix<T>::operator*(const matrix<T>& other) const{
+	if(columns() != other.rows()) throw std::invalid_argument("matrixes dimensions don't agree");
+	matrix<T> res(rows(),other.columns(),0);
+	for(int i = 0; i < rows(); ++i)
+		for(int j = 0; j < other.columns(); ++j)
+			for (int k = 0; k < columns(); ++k)
+				res(i,j) += self(i,k)*other(k,j);
+	return res;
+}
+
+
+template<typename T>
+matrix<T>& matrix<T>::operator*=(const matrix<T>& other){
+	if(columns() != other.rows()) throw std::invalid_argument("matrixes dimensions don't agree");
+	self = self * other;
+	return self;
+}
+
+template<typename T>
+matrix<T> matrix<T>::operator*(const T& a) const{
 	auto res = self;
 	res *= a;
 	return res;
@@ -125,7 +173,7 @@ T dot(const matrix<T>& a, const matrix<T>& b){
 
 
 template<typename T>
-matrix<T>::matrix(size_t rows,size_t columns) :  _rows(rows), _columns(columns), arr(rows*columns){
+matrix<T>::matrix(size_t rows,size_t columns,const T& a) :  _rows(rows), _columns(columns), arr(rows*columns,a){
 	if(rows == 0 || columns == 0) throw std::invalid_argument("can't create empty matrices");
 }
 
