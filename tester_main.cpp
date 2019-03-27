@@ -12,6 +12,8 @@ int main(int argc, char const *argv[])
 	});
 
  	vector<double> v({1,2},false);
-	std::cout << (v*M) << std::endl;
+ 	v = -v;
+ 	v.map([](const double& x){return x*x;});
+	std::cout << v << std::endl;
 	return 0;
 }

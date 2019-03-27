@@ -31,24 +31,24 @@ public:
 	vector<T> transpose() const ;
 
 	template<typename F>
-	void map(const F& f); //Not implemented
+	void map(const F& f);
 
 	bool operator==(const vector<T>& other) const;
 	bool operator!=(const vector<T>& other) const;
 
-	vector<T> operator+(const vector<T>& other) const; //Not implemented
-	vector<T>& operator+=(const vector<T>& other); //Not implemented
+	vector<T> operator+(const vector<T>& other) const; 
+	vector<T>& operator+=(const vector<T>& other); 
 
-	vector<T> operator-() const; //Not implemented 
-	vector<T> operator-(const vector<T>& other) const; //Not implemented
-	vector<T>& operator-=(const vector<T>& other); //Not implemented
+	vector<T> operator-() const;  
+	vector<T> operator-(const vector<T>& other) const; 
+	vector<T>& operator-=(const vector<T>& other); 
 
 
 	vector<T> operator*(const matrix<T>& mat) const; 
 	vector<T>& operator*=(const matrix<T>& mat);
 
-	vector<T> operator*(const T& a) const; //Not implemented
-	vector<T>& operator*=(const T& a); //Not implemented
+	vector<T> operator*(const T& a) const; 
+	vector<T>& operator*=(const T& a); 
 
 	void read_JSON(std::istream& IS); //Not implemented
 	void write_JSON(std::ostream& OS) const; //Not implemented
@@ -57,11 +57,64 @@ public:
 
 
 template<typename T>
-vector<T>& operator+=(const vector<T>& other){
-	if(size() != other.size() || a.is_column_vector() != b.is_column_vector()) throw std::invalid_argument("vectors must have same shapes");
-
+template<typename F>
+void vector<T>::map(const F& f){
+	for(int i = 0; i < size(); ++i)
+		self(i) = f(self(i));
 }
 
+
+template<typename T>
+vector<T>& vector<T>::operator*=(const T& a){
+	for(int i = 0; i < size(); ++i)
+		self(i) *= a;
+	return self;
+}
+
+template<typename T>
+vector<T> vector<T>::operator*(const T& a) const{
+	auto res = self;
+	res *= a;
+	return res;
+}
+
+template<typename T>
+vector<T>& vector<T>::operator+=(const vector<T>& other){
+	if(size() != other.size() || is_column_vector() != other.is_column_vector()) throw std::invalid_argument("vectors must have same shapes");
+	for(int i = 0; i < size(); ++i)
+		self(i) += other(i);
+	return self;
+}
+
+template<typename T>
+vector<T> vector<T>::operator+(const vector<T>& other) const{
+	auto res = self;
+	res += other;
+	return res;
+}
+
+template<typename T>
+vector<T>& vector<T>::operator-=(const vector<T>& other){
+	if(size() != other.size() || is_column_vector() != other.is_column_vector()) throw std::invalid_argument("vectors must have same shapes");
+	for(int i = 0; i < size(); ++i)
+		self(i) -= other(i);
+	return self;
+}
+
+template<typename T>
+vector<T> vector<T>::operator-(const vector<T>& other) const{
+	auto res = self;
+	res -= other;
+	return res;
+}
+
+template<typename T>
+vector<T> vector<T>::operator-() const{
+	auto res = self;
+	for(int i = 0; i < size(); ++i)
+		res(i) = -self(i);
+	return res;
+}
 
 template<typename T>
 size_t vector<T>::size() const { return _size; }
@@ -159,8 +212,5 @@ template<typename T>
 std::ostream& operator<<(std::ostream& out,const vector<T>& m) {
 	return out << to_string(m);
 }
-
-template<typename T>
-vector<T> cross(const vector<T>& a, const vector<T>& b); //Not implemented
 
 #endif
