@@ -18,7 +18,7 @@ class matrix
 	std::vector<T> arr;
 public:
 
-	matrix(size_t rows,size_t columns, const T& x = 0);
+	matrix(size_t rows,size_t columns, const T& x);
 
 	matrix(const std::vector<std::vector<T> >& _arr);
 
@@ -71,7 +71,7 @@ public:
 template<typename T>
 vector<T> matrix<T>::operator*(const vector<T>& vec) const{
 	if(!vec.is_column_vector() || columns() != vec.size()) throw std::invalid_argument("matrix and vector dimensions doesn't agree");
-	vector<T> res(rows(),0);
+	vector<T> res(rows(),true,0);
 	for(int i = 0; i < rows(); ++i)
 		for(int j = 0; j < columns(); ++j)
 			res(i) += self(i,j)*vec(j);
@@ -179,7 +179,7 @@ matrix<T>::matrix(size_t rows,size_t columns,const T& a) :  _rows(rows), _column
 
 template<typename T>
 matrix<T>::matrix(const std::vector<std::vector<T> >& _arr){
-	if(_arr.size() == 0) throw std::invalid_argument("can't create empty matrices");
+	if(_arr.size() == 0 || _arr[0].size() == 0) throw std::invalid_argument("can't create empty matrices");
 	_rows = _arr.size();
 	_columns = _arr.front().size();
 	for(const std::vector<T>& v : _arr) 

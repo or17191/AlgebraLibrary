@@ -5,14 +5,13 @@
 int main(int argc, char const *argv[])
 {
 	/* code */
-	using namespace std;
 
  	matrix<double> M({
 		{0,2},
-		{4,5}
+	    {4,5}
 	});
 
-	M *= -2;
-	cout << M << endl;
+ 	vector<double> v({1,2},false);
+	std::cout << (v*M) << std::endl;
 	return 0;
 }
