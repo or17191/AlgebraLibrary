@@ -57,6 +57,13 @@ public:
 
 
 template<typename T>
+vector<T>& operator+=(const vector<T>& other){
+	if(size() != other.size() || a.is_column_vector() != b.is_column_vector()) throw std::invalid_argument("vectors must have same shapes");
+
+}
+
+
+template<typename T>
 size_t vector<T>::size() const { return _size; }
 
 template<typename T>
