@@ -29,11 +29,26 @@ public:
 
   matrix<T> transpose() const;
 
+  /*
+   * CR - Leave those function out of the interface. Knowing that the function
+   * has a property doesn't help programming that much. Usually you know that a
+   * property holds while you write an algorithm, and you can hold the matrix in
+   * a class tailored to that property. For example, if you know at compile time
+   * that a matrix is triangular, you can hold it using half the space.
+   */
   bool is_upper_triangular() const;
   bool is_lower_triangular() const;
 
   template <typename F> void map(const F &f);
 
+  /**
+   * CR -
+   *
+   * - Actually, you can leave out the gaussian elimintation, but you do need to
+   *   implement gram_schmidt and LLL.
+   * - Make those algoritmhs free functions, since they aren't critical to
+   *   implementing the matrix.
+   */
   void gaussian_elimination();
   void gram_schmidt(); // Not implemented
   void LLL();          // Not implemented
