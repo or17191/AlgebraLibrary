@@ -1,13 +1,12 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include "base.h"
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#define self (*this)
+#include "base.h"
 
 namespace AlgebraTAU {
 
@@ -39,11 +38,12 @@ public:
   vector operator*(const T &a) const;
   vector &operator*=(const T &a);
 
-  vector<orientation_negate(O), T> transpose() const {
-    return vector<orientation_negate(O), T>(arr);
+  vector<orientation(!O), T> transpose() const {
+    return vector<orientation(!O), T>(arr);
   }
-};
 
+  T norm() const { return dot(self, self); }
+};
 
 // void read_JSON(std::istream &IS);        // Not implemented
 // void write_JSON(std::ostream &OS) const; // Not implemented
@@ -53,6 +53,15 @@ vector<row, T> operator*(const vector<row, T> &, const matrix<T> &mat);
 
 template <typename T>
 vector<row, T> operator*=(vector<row, T> &, const matrix<T> &mat);
+
+template <orientation O, typename T>
+T dot(const vector<O, T> &a, const vector<O, T> &b);
+
+template <orientation O, typename T>
+vector<O, T> project(const vector<O, T> &a, const vector<O, T> &b);
+
+template <orientation O, typename T>
+vector<O, T> operator*(const T &b, const vector<O, T> &a);
 
 } // namespace AlgebraTAU
 

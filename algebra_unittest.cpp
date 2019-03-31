@@ -2,6 +2,7 @@
 #include "vector.h"
 #include <gtest/gtest.h>
 #include <iostream>
+#include <math.h>
 
 TEST(MatrixOperators, MatrixNEQ) {
   AlgebraTAU::matrix<double> M1(
@@ -31,7 +32,7 @@ TEST(MatrixOperators, MatrixMultiplication) {
   EXPECT_EQ(M1 * M2, res);
 }
 
-TEST(MatrixMethods, GaussianElimination) {
+TEST(AdvanceAlgebraicOperations, GaussianElimination) {
   AlgebraTAU::matrix<double> M({{1, 2, 2, 0, 5, 1, 7, 4},
                                 {9, 7, 5, 2, 1, 9, 3, 1},
                                 {7, 2, 4, 4, 4, 5, 9, 3},
@@ -73,6 +74,34 @@ TEST(VectorMatrixOperations, VectorMatrixMultiplication) {
       std::vector<double>({22, 28}));
 
   EXPECT_EQ(v * m, res);
+}
+
+TEST(AdvanceAlgebraicOperations, GramSchmidt) {
+  AlgebraTAU::matrix<double> M(
+      {{4.0, 0.0, 4.0}, {9.8, 2.0, 7.8}, {55.18, 7.2, 44.98}});
+
+  AlgebraTAU::matrix<double> N(
+      {{4.0, 0.0, 4.0}, {1.0, 2.0, -1.0}, {1.0, -1.0, -1.0}});
+
+  gram_schmidt(M);
+  M -= N;
+  M.map([](const double &x) { return fabs(x) < 1e-7 ? 0 : x; });
+
+  EXPECT_EQ(M, AlgebraTAU::matrix<double>(3, 3, 0));
+}
+
+TEST(AdvanceAlgebraicOperations, LLL) {
+  AlgebraTAU::matrix<double> B(
+      {{1.0, 1.0, 1.0}, {-1.0, 0.0, 2.0}, {3.0, 5.0, 6.0}});
+
+  AlgebraTAU::matrix<double> res(
+      {{0.0, 1.0, 0.0}, {1.0, 0.0, 1.0}, {-1.0, 0.0, 2.0}});
+
+  AlgebraTAU::LLL(B, 0.75);
+  B -= res;
+  B.map([](const double &x) { return fabs(x) < 1e-7 ? 0 : x; });
+
+  EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3, 0));
 }
 
 int main(int argc, char const *argv[]) {

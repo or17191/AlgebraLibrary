@@ -1,5 +1,61 @@
 namespace AlgebraTAU {
 
+template <typename T> vector<row, T> matrix<T>::get_row(int i) const {
+  if (i > rows())
+    throw std::invalid_argument("index out of range");
+
+  std::vector<T> res(columns());
+  for (int j = 0; j < columns(); ++j)
+    res[j] = self(i, j);
+  return res;
+}
+
+template <typename T> vector<column, T> matrix<T>::get_column(int j) const {
+  if (j > columns())
+    throw std::invalid_argument("index out of range");
+
+  std::vector<T> res(rows());
+  for (int i = 0; i < columns(); ++i)
+    res[i] = self(i, j);
+  return res;
+}
+
+template <typename T> void matrix<T>::set_row(int i, const vector<row, T> &v) {
+  if (i > rows())
+    throw std::invalid_argument("index out of range");
+
+  if (v.size() != columns())
+    throw std::invalid_argument("vector and matrix dimensions doesn't agree");
+
+  for (int j = 0; j < columns(); ++j)
+    self(i, j) = v(j);
+}
+
+template <typename T>
+void matrix<T>::set_column(int j, const vector<column, T> &v) {
+  if (j > columns())
+    throw std::invalid_argument("index out of range");
+
+  if (v.size() != rows())
+    throw std::invalid_argument("vector and matrix dimensions doesn't agree");
+
+  for (int i = 0; i < rows(); ++i)
+    self(i, j) = v(j);
+}
+
+template <typename T> void gram_schmidt(matrix<T> &m) {
+  if (m.rows() != m.columns())
+    throw std::domain_error("can't preform gram_schmidt on non-square matrix");
+
+  for (int i = 1; i < m.rows(); ++i) {
+    vector<row, T> v = m.get_row(i), s(m.columns(), 0);
+    for (int j = 0; j < i; ++j) {
+      s += project(v, m.get_row(j));
+    }
+    m.set_row(i, v - s);
+  }
+}
+
 template <typename T> bool is_upper_triangular(const matrix<T> &m) {
   for (int i = 0; i < m.rows(); ++i)
     for (int j = 0; j < i && j < m.columns(); ++j)
@@ -27,7 +83,7 @@ vector<column, T> matrix<T>::operator*(const vector<column, T> &vec) const {
   return res;
 }
 
-template <typename T> matrix<T> &matrix<T>::operator+=(const matrix<T> &other) {
+template <typename T> matrix<T> &matrix<T>::operator+=(const matrix &other) {
   if (columns() != other.columns() || rows() != other.rows())
     throw std::invalid_argument("matrixes must have same shapes");
   for (int i = 0; i < rows(); ++i)
@@ -37,7 +93,7 @@ template <typename T> matrix<T> &matrix<T>::operator+=(const matrix<T> &other) {
 }
 
 template <typename T>
-matrix<T> matrix<T>::operator+(const matrix<T> &other) const {
+matrix<T> matrix<T>::operator+(const matrix &other) const {
   if (columns() != other.columns() || rows() != other.rows())
     throw std::invalid_argument("matrixes must have same shapes");
   auto res = self;
@@ -45,7 +101,7 @@ matrix<T> matrix<T>::operator+(const matrix<T> &other) const {
   return res;
 }
 
-template <typename T> matrix<T> &matrix<T>::operator-=(const matrix<T> &other) {
+template <typename T> matrix<T> &matrix<T>::operator-=(const matrix &other) {
   if (columns() != other.columns() || rows() != other.rows())
     throw std::invalid_argument("matrixes must have same shapes");
   for (int i = 0; i < rows(); ++i)
@@ -63,7 +119,7 @@ template <typename T> matrix<T> matrix<T>::operator-() const {
 }
 
 template <typename T>
-matrix<T> matrix<T>::operator-(const matrix<T> &other) const {
+matrix<T> matrix<T>::operator-(const matrix &other) const {
   if (columns() != other.columns() || rows() != other.rows())
     throw std::invalid_argument("matrixes must have same shapes");
   auto res = self;
@@ -79,7 +135,7 @@ template <typename T> matrix<T> &matrix<T>::operator*=(const T &a) {
 }
 
 template <typename T>
-matrix<T> matrix<T>::operator*(const matrix<T> &other) const {
+matrix<T> matrix<T>::operator*(const matrix &other) const {
   if (columns() != other.rows())
     throw std::invalid_argument("matrixes dimensions don't agree");
   matrix<T> res(rows(), other.columns(), 0);
@@ -90,7 +146,7 @@ matrix<T> matrix<T>::operator*(const matrix<T> &other) const {
   return res;
 }
 
-template <typename T> matrix<T> &matrix<T>::operator*=(const matrix<T> &other) {
+template <typename T> matrix<T> &matrix<T>::operator*=(const matrix &other) {
   if (columns() != other.rows())
     throw std::invalid_argument("matrixes dimensions don't agree");
   self = self * other;
@@ -101,6 +157,43 @@ template <typename T> matrix<T> matrix<T>::operator*(const T &a) const {
   auto res = self;
   res *= a;
   return res;
+}
+
+template <typename T> void LLL(matrix<T> &m, const T &delta) {
+  int n = m.rows() - 1;
+  int dim = m.columns();
+  vector<row, T> vec(dim, 0);
+  matrix<T> ortho = m;
+  gram_schmidt(ortho);
+
+  auto mu = [&m, &ortho](int i, int j) {
+    return dot(m.get_row(i), ortho.get_row(j)) /
+           dot(ortho.get_row(j), ortho.get_row(j));
+  };
+
+  int k = 1;
+  while (k <= n) {
+    for (int j = k - 1; j >= 0; --j) {
+      if (2 * abs(mu(k, j)) > 1) {
+        m.set_row(k, m.get_row(k) - round(mu(k, j)) * m.get_row(j));
+        ortho = m;
+        gram_schmidt(ortho);
+      }
+    }
+
+    if (ortho.get_row(k).norm() >=
+        (delta - pow(mu(k, k - 1), 2)) * ortho.get_row(k - 1).norm()) {
+      k = k + 1;
+    } else {
+      vec = m.get_row(k);
+      m.set_row(k, m.get_row(k - 1));
+      m.set_row(k - 1, vec);
+      ortho = m;
+      gram_schmidt(ortho);
+
+      k = std::max(k - 1, 1);
+    }
+  }
 }
 
 template <typename T> T dot(const matrix<T> &a, const matrix<T> &b) {
@@ -150,7 +243,7 @@ template <typename T> inline T &matrix<T>::operator()(size_t i, size_t j) {
   return arr[i * columns() + j];
 }
 
-template <typename T> bool matrix<T>::operator==(const matrix<T> &other) const {
+template <typename T> bool matrix<T>::operator==(const matrix &other) const {
   if (other.columns() != columns() || other.rows() != rows())
     return false;
 
@@ -161,7 +254,7 @@ template <typename T> bool matrix<T>::operator==(const matrix<T> &other) const {
   return true;
 }
 
-template <typename T> bool matrix<T>::operator!=(const matrix<T> &other) const {
+template <typename T> bool matrix<T>::operator!=(const matrix &other) const {
   return !(self == other);
 }
 
@@ -218,11 +311,21 @@ template <typename T> T matrix<T>::det() const {
   if (rows() != columns())
     throw std::domain_error("can't take determinanent of non-square matrix");
 
-  matrix<T> M = self;
+  matrix M = self;
   gaussian_elimination(M);
   T res = 1;
   for (int i = 0; i < rows(); ++i)
     res *= M(i, i);
+  return res;
+}
+
+template <typename T> T matrix<T>::trace() const {
+  if (rows() != columns())
+    throw std::domain_error("can't take trace of non-square matrix");
+
+  T res = 0;
+  for (int i = 0; i < rows(); ++i)
+    res += self(i, i);
   return res;
 }
 

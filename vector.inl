@@ -7,6 +7,11 @@ void vector<O, T>::map(const F &f) {
 }
 
 template <orientation O, typename T>
+vector<O, T> operator*(const T &b, const vector<O, T> &a) {
+  return a * b;
+}
+
+template <orientation O, typename T>
 vector<O, T> &vector<O, T>::operator*=(const T &a) {
   for (int i = 0; i < size(); ++i)
     self(i) *= a;
@@ -113,6 +118,11 @@ T dot(const vector<O, T> &a, const vector<O, T> &b) {
   for (int i = 0; i < a.size(); ++i)
     res += a(i) * b(i);
   return res;
+}
+
+template <orientation O, typename T>
+vector<O, T> project(const vector<O, T> &a, const vector<O, T> &b) {
+  return (dot(a, b) / dot(b, b)) * b;
 }
 
 template <orientation O, typename T>

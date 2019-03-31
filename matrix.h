@@ -1,13 +1,13 @@
 #ifndef MARIX_H
 #define MARIX_H
 
-#include "base.h"
 #include <iostream>
+#include <math.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#define self (*this)
+#include "base.h"
 
 namespace AlgebraTAU {
 
@@ -27,38 +27,44 @@ public:
 
   inline T &operator()(size_t i, size_t j);
 
-  matrix<T> transpose() const;
+  matrix transpose() const;
 
   template <typename F> void map(const F &f);
 
   T det() const;
-  matrix<T> invert() const; // Not implemented
-  T trace() const;          // Not implemented
+  // matrix invert() const; // Not implemented
+  T trace() const;
 
-  bool operator==(const matrix<T> &other) const;
-  bool operator!=(const matrix<T> &other) const;
+  bool operator==(const matrix &other) const;
+  bool operator!=(const matrix &other) const;
 
-  matrix<T> operator+(const matrix<T> &other) const;
-  matrix<T> &operator+=(const matrix<T> &other);
+  matrix operator+(const matrix &other) const;
+  matrix &operator+=(const matrix &other);
 
-  matrix<T> operator-() const;
-  matrix<T> operator-(const matrix<T> &other) const;
-  matrix<T> &operator-=(const matrix<T> &other);
+  matrix operator-() const;
+  matrix operator-(const matrix &other) const;
+  matrix &operator-=(const matrix &other);
 
-  matrix<T> operator*(const matrix<T> &other) const;
-  matrix<T> &operator*=(const matrix<T> &other);
+  matrix operator*(const matrix &other) const;
+  matrix &operator*=(const matrix &other);
 
   vector<column, T> operator*(const vector<column, T> &vec) const;
 
-  matrix<T> operator*(const T &a) const;
-  matrix<T> &operator*=(const T &a);
+  matrix operator*(const T &a) const;
+  matrix &operator*=(const T &a);
+
+  vector<row, T> get_row(int i) const;
+  vector<column, T> get_column(int i) const;
+
+  void set_row(int i, const vector<row, T> &v);
+  void set_column(int j, const vector<column, T> &v);
 };
 
 template <typename T> void gaussian_elimination(matrix<T> &m);
 
-template <typename T> void gram_schmidt(matrix<T> &m); // Not implemented
+template <typename T> void gram_schmidt(matrix<T> &m);
 
-template <typename T> void LLL(matrix<T> &m); // Not implemented
+template <typename T> void LLL(matrix<T> &m, const T &delta);
 
 } // namespace AlgebraTAU
 
