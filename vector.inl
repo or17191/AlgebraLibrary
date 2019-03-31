@@ -1,26 +1,26 @@
 namespace AlgebraTAU {
-template <orientation O,typename T>
+template <orientation O, typename T>
 template <typename F>
 void vector<O, T>::map(const F &f) {
   for (int i = 0; i < size(); ++i)
     self(i) = f(self(i));
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 vector<O, T> &vector<O, T>::operator*=(const T &a) {
   for (int i = 0; i < size(); ++i)
     self(i) *= a;
   return self;
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 vector<O, T> vector<O, T>::operator*(const T &a) const {
   auto res = self;
   res *= a;
   return res;
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 vector<O, T> &vector<O, T>::operator+=(const vector<O, T> &other) {
   if (size() != other.size())
     throw std::invalid_argument("vectors must have same shapes");
@@ -29,14 +29,14 @@ vector<O, T> &vector<O, T>::operator+=(const vector<O, T> &other) {
   return self;
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 vector<O, T> vector<O, T>::operator+(const vector<O, T> &other) const {
   auto res = self;
   res += other;
   return res;
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 vector<O, T> &vector<O, T>::operator-=(const vector<O, T> &other) {
   if (size() != other.size())
     throw std::invalid_argument("vectors must have same shapes");
@@ -45,14 +45,14 @@ vector<O, T> &vector<O, T>::operator-=(const vector<O, T> &other) {
   return self;
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 vector<O, T> vector<O, T>::operator-(const vector<O, T> &other) const {
   auto res = self;
   res -= other;
   return res;
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 vector<O, T> vector<O, T>::operator-() const {
   auto res = self;
   for (int i = 0; i < size(); ++i)
@@ -60,24 +60,24 @@ vector<O, T> vector<O, T>::operator-() const {
   return res;
 }
 
-template <orientation O,typename T> size_t vector<O, T>::size() const {
+template <orientation O, typename T> size_t vector<O, T>::size() const {
   return arr.size();
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 const T &vector<O, T>::operator()(size_t i) const {
   return arr[i];
 }
 
-template <orientation O,typename T> T &vector<O, T>::operator()(size_t i) {
+template <orientation O, typename T> T &vector<O, T>::operator()(size_t i) {
   return arr[i];
 }
 
 template <typename T>
-vector<row, T> operator*(const vector<row,T> & v, const matrix<T> &mat) {
-  if(v.size() != mat.rows())
+vector<row, T> operator*(const vector<row, T> &v, const matrix<T> &mat) {
+  if (v.size() != mat.rows())
     throw std::invalid_argument("matrix and vector dimensions doesn't agree");
- 
+
   vector<row, T> res(mat.columns(), 0);
   for (int i = 0; i < mat.rows(); ++i)
     for (int j = 0; j < mat.columns(); ++j)
@@ -86,28 +86,26 @@ vector<row, T> operator*(const vector<row,T> & v, const matrix<T> &mat) {
 }
 
 template <typename T>
-vector<row, T> &operator*=(vector<row,T> & v, const matrix<T> &mat) {
+vector<row, T> &operator*=(vector<row, T> &v, const matrix<T> &mat) {
   if (v.size() != mat.rows())
     throw std::invalid_argument("matrix and vector dimensions doesn't agree");
   v = v * mat;
   return v;
 }
 
-template <orientation O,typename T>
-vector<O, T>::vector(size_t size, const T &a)
-    : arr(size, a) {
+template <orientation O, typename T>
+vector<O, T>::vector(size_t size, const T &a) : arr(size, a) {
   if (size == 0)
     throw std::invalid_argument("can't create empty vectors");
 }
 
-template <orientation O,typename T>
-vector<O, T>::vector(const std::vector<T> &_arr)
-    : arr(_arr) {
+template <orientation O, typename T>
+vector<O, T>::vector(const std::vector<T> &_arr) : arr(_arr) {
   if (size() == 0)
     throw std::invalid_argument("can't create empty vectors");
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 T dot(const vector<O, T> &a, const vector<O, T> &b) {
   if (a.size() != b.size())
     throw std::invalid_argument("vectos must have same shapes");
@@ -117,7 +115,7 @@ T dot(const vector<O, T> &a, const vector<O, T> &b) {
   return res;
 }
 
-template <orientation O,typename T>
+template <orientation O, typename T>
 bool vector<O, T>::operator==(const vector &other) const {
   if (size() != other.size())
     return false;
@@ -127,20 +125,12 @@ bool vector<O, T>::operator==(const vector &other) const {
   return true;
 }
 
-
-template <orientation O,typename T>
+template <orientation O, typename T>
 bool vector<O, T>::operator!=(const vector<O, T> &other) const {
   return !(self == other);
 }
 
-//template <orientation O,typename T>
-//vector<O, T> vector<O, T>::transpose() const {
-//  T res = self;
-//  res = !res.m_is_column_vector;
-//  return res;
-//}
-
-template <orientation O,typename T>
+template <orientation O, typename T>
 std::ostream &operator<<(std::ostream &out, const vector<O, T> &v) {
   using std::to_string;
   std::string res = "";
@@ -154,7 +144,8 @@ std::ostream &operator<<(std::ostream &out, const vector<O, T> &v) {
   res.pop_back();
 
   res += ")";
-  if(O == column) res += "^T";
+  if (O == column)
+    res += "^T";
 
   return out << res;
 }

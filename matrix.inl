@@ -1,4 +1,3 @@
-
 namespace AlgebraTAU {
 
 template <typename T> bool is_upper_triangular(const matrix<T> &m) {
@@ -18,10 +17,10 @@ template <typename T> bool is_lower_triangular(const matrix<T> &m) {
 }
 
 template <typename T>
-vector<column,T> matrix<T>::operator*(const vector<column,T> &vec) const {
+vector<column, T> matrix<T>::operator*(const vector<column, T> &vec) const {
   if (columns() != vec.size())
     throw std::invalid_argument("matrix and vector dimensions doesn't agree");
-  vector<column,T> res(rows(), true, 0);
+  vector<column, T> res(rows(), true, 0);
   for (int i = 0; i < rows(); ++i)
     for (int j = 0; j < columns(); ++j)
       res(i) += self(i, j) * vec(j);
@@ -183,8 +182,7 @@ template <typename T> template <typename F> void matrix<T>::map(const F &f) {
       self(i, j) = f(self(i, j));
 }
 
-template <typename T> 
-void gaussian_elimination(matrix<T>& m) {
+template <typename T> void gaussian_elimination(matrix<T> &m) {
   using namespace std;
   int t = 0;
   T r;

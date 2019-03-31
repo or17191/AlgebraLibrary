@@ -50,36 +50,30 @@ TEST(MatrixMethods, TransposeTranpose) {
   EXPECT_EQ(M, M.transpose().transpose());
 }
 
-
 TEST(VectorOperators, Transpose) {
-  AlgebraTAU::vector<AlgebraTAU::row,double> v1({1, 2, 2, 0, 5, 1, 7, 4});
-  AlgebraTAU::vector<AlgebraTAU::column,double> v2({1, 2, 2, 0, 5, 1, 7, 4});
+  AlgebraTAU::vector<AlgebraTAU::row, double> v1({1, 2, 2, 0, 5, 1, 7, 4});
+  AlgebraTAU::vector<AlgebraTAU::column, double> v2({1, 2, 2, 0, 5, 1, 7, 4});
 
   EXPECT_EQ(v1.transpose(), v2);
   EXPECT_EQ(v2.transpose(), v1);
 }
 
-TEST(VectorOperators, ScalarMultiplication) { 
-  AlgebraTAU::vector<AlgebraTAU::row,double> v({1,2,3,4});
-  AlgebraTAU::vector<AlgebraTAU::row,double> res({2.5,5,7.5,10});
+TEST(VectorOperators, ScalarMultiplication) {
+  AlgebraTAU::vector<AlgebraTAU::row, double> v({1, 2, 3, 4});
+  AlgebraTAU::vector<AlgebraTAU::row, double> res({2.5, 5, 7.5, 10});
   v *= 2.5;
 
-  EXPECT_EQ(v,res);
+  EXPECT_EQ(v, res);
 }
 
-TEST(VectorMatrixOperations, VectorMatrixMultiplication){
-  AlgebraTAU::vector<AlgebraTAU::row,double> v(std::vector<double>({1,2,3}));
-  AlgebraTAU::matrix<double> m({
-    {1,2},
-    {3,4},
-    {5,6}
-  });
-  AlgebraTAU::vector<AlgebraTAU::row,double> res(std::vector<double>({22,28}));
+TEST(VectorMatrixOperations, VectorMatrixMultiplication) {
+  AlgebraTAU::vector<AlgebraTAU::row, double> v(std::vector<double>({1, 2, 3}));
+  AlgebraTAU::matrix<double> m({{1, 2}, {3, 4}, {5, 6}});
+  AlgebraTAU::vector<AlgebraTAU::row, double> res(
+      std::vector<double>({22, 28}));
 
-  EXPECT_EQ(v*m,res);
+  EXPECT_EQ(v * m, res);
 }
-
-
 
 int main(int argc, char const *argv[]) {
   testing::InitGoogleTest(&argc, (char **)(argv));

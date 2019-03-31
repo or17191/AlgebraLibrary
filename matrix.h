@@ -48,20 +48,17 @@ public:
   matrix<T> operator*(const matrix<T> &other) const;
   matrix<T> &operator*=(const matrix<T> &other);
 
-  vector<column,T> operator*(const vector<column,T> &vec) const;
+  vector<column, T> operator*(const vector<column, T> &vec) const;
 
   matrix<T> operator*(const T &a) const;
   matrix<T> &operator*=(const T &a);
 };
 
-template<typename T>
-void gaussian_elimination(matrix<T>& m);
+template <typename T> void gaussian_elimination(matrix<T> &m);
 
-template<typename T>
-void gram_schmidt(matrix<T>& m); // Not implemented
+template <typename T> void gram_schmidt(matrix<T> &m); // Not implemented
 
-template<typename T>
-void LLL(matrix<T>& m);          // Not implemented
+template <typename T> void LLL(matrix<T> &m); // Not implemented
 
 } // namespace AlgebraTAU
 
