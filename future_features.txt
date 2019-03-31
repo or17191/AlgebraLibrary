@@ -1,2 +1,3 @@
 add vector norm and matrix norms
 add an option to preform cross product in higher dimensions (n dimension cross product requires n-1 vectors to define the hyperplane norm) maybe there's need of variadic functions
+g++ -std=c++11 algebra_unittest.cc /usr/local/lib/libgtest.a -o your_test
