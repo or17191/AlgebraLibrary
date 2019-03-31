@@ -1,8 +1,7 @@
 
 namespace AlgebraTAU {
 
-template <typename T>
-bool is_upper_triangular(const matrix<T>& m){
+template <typename T> bool is_upper_triangular(const matrix<T> &m) {
   for (int i = 0; i < m.rows(); ++i)
     for (int j = 0; j < i && j < m.columns(); ++j)
       if (m(i, j) != 0)
@@ -10,9 +9,8 @@ bool is_upper_triangular(const matrix<T>& m){
   return true;
 };
 
-template <typename T>
-bool is_lower_triangular(const matrix<T>& m){
-   for (int i = 0; i < m.rows(); ++i)
+template <typename T> bool is_lower_triangular(const matrix<T> &m) {
+  for (int i = 0; i < m.rows(); ++i)
     for (int j = i + 1; j < m.columns(); ++j)
       if (m(i, j) != 0)
         return false;
@@ -20,10 +18,10 @@ bool is_lower_triangular(const matrix<T>& m){
 }
 
 template <typename T>
-vector<T> matrix<T>::operator*(const vector<T> &vec) const {
-  if (!vec.is_column_vector() || columns() != vec.size())
+vector<column,T> matrix<T>::operator*(const vector<column,T> &vec) const {
+  if (columns() != vec.size())
     throw std::invalid_argument("matrix and vector dimensions doesn't agree");
-  vector<T> res(rows(), true, 0);
+  vector<column,T> res(rows(), true, 0);
   for (int i = 0; i < rows(); ++i)
     for (int j = 0; j < columns(); ++j)
       res(i) += self(i, j) * vec(j);
@@ -130,10 +128,10 @@ matrix<T>::matrix(const std::vector<std::vector<T>> &_arr) {
   m_rows = _arr.size();
   m_columns = _arr.front().size();
   for (const std::vector<T> &v : _arr)
-    if (v.size() != m_columns)
+    if (v.size() != columns())
       throw std::invalid_argument("all rows must be of same size");
 
-  arr = std::vector<T>(m_rows * m_columns);
+  arr = std::vector<T>(rows() * columns());
   int i = 0;
   for (const std::vector<T> &v : _arr)
     for (const T &x : v)
@@ -146,19 +144,19 @@ template <typename T> size_t matrix<T>::columns() const { return m_columns; }
 
 template <typename T>
 inline const T &matrix<T>::operator()(size_t i, size_t j) const {
-  return arr[i * m_columns + j];
+  return arr[i * columns() + j];
 }
 
 template <typename T> inline T &matrix<T>::operator()(size_t i, size_t j) {
-  return arr[i * m_columns + j];
+  return arr[i * columns() + j];
 }
 
 template <typename T> bool matrix<T>::operator==(const matrix<T> &other) const {
-  if (other.m_columns != m_columns || other.m_rows != m_rows)
+  if (other.columns() != columns() || other.rows() != rows())
     return false;
 
-  for (int i = 0; i < m_rows; ++i)
-    for (int j = 0; j < m_columns; ++j)
+  for (int i = 0; i < rows(); ++i)
+    for (int j = 0; j < columns(); ++j)
       if (self(i, j) != other(i, j))
         return false;
   return true;
@@ -170,61 +168,63 @@ template <typename T> bool matrix<T>::operator!=(const matrix<T> &other) const {
 
 template <typename T> matrix<T> matrix<T>::transpose() const {
   using namespace std;
-  matrix<T> res(m_columns, m_rows,0);
+  matrix<T> res(columns(), rows(), 0);
 
-  for (int i = 0; i < m_rows; ++i)
-    for (int j = 0; j < m_columns; ++j)
+  for (int i = 0; i < rows(); ++i)
+    for (int j = 0; j < columns(); ++j)
       res(j, i) = self(i, j);
 
   return res;
 }
 
 template <typename T> template <typename F> void matrix<T>::map(const F &f) {
-  for (int i = 0; i < m_rows; ++i)
-    for (int j = 0; j < m_rows; ++j)
+  for (int i = 0; i < rows(); ++i)
+    for (int j = 0; j < rows(); ++j)
       self(i, j) = f(self(i, j));
 }
 
-template <typename T> void matrix<T>::gaussian_elimination() {
+template <typename T> 
+void gaussian_elimination(matrix<T>& m) {
   using namespace std;
   int t = 0;
   T r;
 
-  for (int i = 0; i < m_rows && i < m_columns; ++i) {
-    if (self(i, i) == 0) {
-      for (t = i + 1; t < m_rows && self(t, i) == 0; ++t)
+  for (int i = 0; i < m.rows() && i < m.columns(); ++i) {
+    if (m(i, i) == 0) {
+      for (t = i + 1; t < m.rows() && m(t, i) == 0; ++t)
         ;
-      if (t >= m_rows) {
+      if (t >= m.rows()) {
         --i;
         continue;
       }
-      if (t < m_rows) {
-        for (int j = 0; j < m_columns; ++j) {
-          swap(self(i, j), self(t, j));
-          self(i, j) *= -1;
+      if (t < m.rows()) {
+        for (int j = 0; j < m.columns(); ++j) {
+          swap(m(i, j), m(t, j));
+          m(i, j) *= -1;
         }
       } else {
         continue;
       }
     }
 
-    for (t = i + 1; t < m_rows; ++t) {
-      r = self(t, i) / self(i, i);
-      for (int j = i; j < m_columns; ++j) {
-        self(t, j) -= r * self(i, j);
+    for (t = i + 1; t < m.rows(); ++t) {
+      r = m(t, i) / m(i, i);
+      for (int j = i; j < m.columns(); ++j) {
+        m(t, j) -= r * m(i, j);
       }
     }
   }
 }
 
 template <typename T> T matrix<T>::det() const {
-  if (m_rows != m_columns)
+  if (rows() != columns())
     throw std::domain_error("can't take determinanent of non-square matrix");
 
   matrix<T> M = self;
-  M.gaussian_elimination();
+  gaussian_elimination(M);
   T res = 1;
-  for (int i = 0; i < m_rows; ++i) res *= M(i, i);
+  for (int i = 0; i < rows(); ++i)
+    res *= M(i, i);
   return res;
 }
 

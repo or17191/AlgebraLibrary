@@ -1,6 +1,7 @@
 #ifndef MARIX_H
 #define MARIX_H
 
+#include "base.h"
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -9,7 +10,6 @@
 #define self (*this)
 
 namespace AlgebraTAU {
-template <typename T> class vector;
 
 template <typename T> class matrix {
   size_t m_rows, m_columns;
@@ -31,10 +31,6 @@ public:
 
   template <typename F> void map(const F &f);
 
-  void gaussian_elimination();
-  void gram_schmidt(); // Not implemented
-  void LLL();          // Not implemented
-
   T det() const;
   matrix<T> invert() const; // Not implemented
   T trace() const;          // Not implemented
@@ -52,14 +48,21 @@ public:
   matrix<T> operator*(const matrix<T> &other) const;
   matrix<T> &operator*=(const matrix<T> &other);
 
-  vector<T> operator*(const vector<T> &vec) const;
+  vector<column,T> operator*(const vector<column,T> &vec) const;
 
   matrix<T> operator*(const T &a) const;
   matrix<T> &operator*=(const T &a);
-
-  void read_JSON(std::istream &IS);        // Not implemented
-  void write_JSON(std::ostream &OS) const; // Not implemented
 };
+
+template<typename T>
+void gaussian_elimination(matrix<T>& m);
+
+template<typename T>
+void gram_schmidt(matrix<T>& m); // Not implemented
+
+template<typename T>
+void LLL(matrix<T>& m);          // Not implemented
+
 } // namespace AlgebraTAU
 
 #include "matrix.inl"
