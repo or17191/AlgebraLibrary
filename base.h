@@ -3,9 +3,14 @@
 
 #define self (*this)
 
-namespace AlgebraTAU {
+namespace AlgebraTAU
+{
 
-enum orientation { row = 0, column };
+enum orientation
+{
+    row = 0,
+    column
+};
 template <orientation O, typename T> class vector;
 template <typename T> class matrix;
 
