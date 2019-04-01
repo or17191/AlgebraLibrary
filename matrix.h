@@ -12,6 +12,7 @@
 namespace AlgebraTAU
 {
 
+// generative class matrix represents a matrix of type T
 template <typename T>
 class matrix
 {
@@ -30,6 +31,9 @@ class matrix
     // throws std::invalid_argument if not all rows in _arr are of same size
     matrix(const std::initializer_list<std::initializer_list<T>>& _arr);
 
+    // constructs matrix given data vector _arr, _arr is a row-wise representation
+    // throws std::invalid_argument if _arr is empty
+    // throws std::invalid_argument if not all rows in _arr are of same size
     matrix(const std::vector<std::vector<T>>& _arr);
 
     // returns the number of rows in the matrix
