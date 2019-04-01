@@ -17,8 +17,8 @@ class vector
     std::vector<T> arr;
 
     public:
-    vector(size_t size, const T& x);
-    // change to explicit constructor with initializer list
+    vector(size_t size, const T& x = {});
+    vector(const std::initializer_list<T>& _arr);
     vector(const std::vector<T>& _arr);
 
     inline size_t size() const;

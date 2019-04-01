@@ -23,11 +23,13 @@ class matrix
     public:
     // constructs matrix of shape rows x columns with default value = a
     // throws std::invalid_argument if rows == 0 or columns == 0
-    matrix(size_t rows, size_t columns, const T& a);
+    matrix(size_t rows, size_t columns, const T& a = {});
 
     // constructs matrix given data _arr, _arr is a row-wise representation
     // throws std::invalid_argument if _arr is empty
     // throws std::invalid_argument if not all rows in _arr are of same size
+    matrix(const std::initializer_list<std::initializer_list<T>>& _arr);
+
     matrix(const std::vector<std::vector<T>>& _arr);
 
     // returns the number of rows in the matrix

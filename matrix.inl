@@ -248,21 +248,52 @@ matrix<T>::matrix(size_t rows, size_t columns, const T& a)
 }
 
 template <typename T>
-matrix<T>::matrix(const std::vector<std::vector<T>>& _arr)
+matrix<T>::matrix(const std::initializer_list<std::initializer_list<T>>& _arr)
 {
-    if (_arr.size() == 0 || _arr[0].size() == 0)
+    if (_arr.size() == 0 )
         throw std::invalid_argument("can't create empty matrices");
+    
     m_rows = _arr.size();
-    m_columns = _arr.front().size();
-    for (const std::vector<T>& v : _arr)
+    m_columns = _arr.begin()->size();
+
+    for (const auto& v : _arr)
         if (v.size() != columns()) throw std::invalid_argument("all rows must be of same size");
 
+    if(columns() == 0)
+        throw std::invalid_argument("can't create empty matrices");
+
     arr = std::vector<T>(rows() * columns());
+    
     int i = 0;
-    for (const std::vector<T>& v : _arr)
+    for (const auto& v : _arr)
         for (const T& x : v)
             arr[i++] = x;
 }
+
+
+
+template <typename T>
+matrix<T>::matrix(const std::vector<std::vector<T>>& _arr){
+  if (_arr.size() == 0 )
+        throw std::invalid_argument("can't create empty matrices");
+    
+    m_rows = _arr.size();
+    m_columns = _arr.begin()->size();
+
+    for (const auto& v : _arr)
+        if (v.size() != columns()) throw std::invalid_argument("all rows must be of same size");
+
+    if(columns() == 0)
+        throw std::invalid_argument("can't create empty matrices");
+
+    arr = std::vector<T>(rows() * columns());
+    
+    int i = 0;
+    for (const auto& v : _arr)
+        for (const T& x : v)
+            arr[i++] = x;
+}
+
 
 template <typename T>
 size_t matrix<T>::rows() const

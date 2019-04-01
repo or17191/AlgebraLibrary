@@ -132,7 +132,13 @@ vector<O, T>::vector(size_t size, const T& a) : arr(size, a)
 }
 
 template <orientation O, typename T>
-vector<O, T>::vector(const std::vector<T>& _arr) : arr(_arr)
+vector<O, T>::vector(const std::initializer_list<T>& _arr) : arr(_arr.begin(),_arr.end())
+{
+    if (size() == 0) throw std::invalid_argument("can't create empty vectors");
+}
+
+template <orientation O, typename T>
+vector<O, T>::vector(const std::vector<T>& _arr) : arr(_arr.begin(),_arr.end())
 {
     if (size() == 0) throw std::invalid_argument("can't create empty vectors");
 }

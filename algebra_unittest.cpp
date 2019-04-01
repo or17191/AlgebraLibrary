@@ -97,9 +97,9 @@ TEST(VectorOperators, ScalarMultiplication)
 
 TEST(VectorMatrixOperations, VectorMatrixMultiplication)
 {
-    AlgebraTAU::vector<AlgebraTAU::row, double> v(std::vector<double>({ 1, 2, 3 }));
+    AlgebraTAU::vector<AlgebraTAU::row, double> v({ 1, 2, 3 });
     AlgebraTAU::matrix<double> m({ { 1, 2 }, { 3, 4 }, { 5, 6 } });
-    AlgebraTAU::vector<AlgebraTAU::row, double> res(std::vector<double>({ 22, 28 }));
+    AlgebraTAU::vector<AlgebraTAU::row, double> res({ 22, 28 });
 
     EXPECT_EQ(v * m, res);
 }
