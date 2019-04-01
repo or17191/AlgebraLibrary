@@ -114,7 +114,7 @@ TEST(AdvanceAlgebraicOperations, GramSchmidt)
     M -= N;
     M.map([](const double& x) { return fabs(x) < epsilon ? 0 : x; });
 
-    EXPECT_EQ(M, AlgebraTAU::matrix<double>(3, 3, 0));
+    EXPECT_EQ(M, AlgebraTAU::matrix<double>(3, 3));
 }
 
 TEST(AdvanceAlgebraicOperations, LLL)
@@ -127,7 +127,7 @@ TEST(AdvanceAlgebraicOperations, LLL)
     B -= res;
     B.map([](const double& x) { return fabs(x) < epsilon ? 0 : x; });
 
-    EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3, 0));
+    EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3));
 }
 
 
