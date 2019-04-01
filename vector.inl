@@ -1,3 +1,4 @@
+#include "vector.h"
 namespace AlgebraTAU
 {
 template <orientation O, typename T>

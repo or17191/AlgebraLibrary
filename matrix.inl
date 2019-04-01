@@ -1,3 +1,4 @@
+#include "matrix.h"
 namespace AlgebraTAU
 {
 
@@ -188,6 +189,8 @@ matrix<T> matrix<T>::operator*(const T& a) const
 template <typename T>
 void LLL(matrix<T>& m, const T& delta)
 {
+    
+    using std::abs;
     int n = m.rows() - 1;
     int dim = m.columns();
     vector<row, T> vec(dim, 0);
@@ -208,6 +211,7 @@ void LLL(matrix<T>& m, const T& delta)
                 m.set_row(k, m.get_row(k) - round(mu(k, j)) * m.get_row(j));
                 ortho = m;
                 gram_schmidt(ortho);
+
             }
         }
 

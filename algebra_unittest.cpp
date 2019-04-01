@@ -2,7 +2,7 @@
 #include "vector.h"
 #include <gtest/gtest.h>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 #define epsilon 1e-12
 
@@ -106,27 +106,28 @@ TEST(VectorMatrixOperations, VectorMatrixMultiplication)
 
 TEST(AdvanceAlgebraicOperations, GramSchmidt)
 {
-    AlgebraTAU::matrix<double> M({ { 4.0, 0.0, 4.0 }, { 9.8, 2.0, 7.8 }, { 55.18, 7.2, 44.98 } });
+    using std::abs;
+    AlgebraTAU::matrix<double> B({ { 4.0, 0.0, 4.0 }, { 9.8, 2.0, 7.8 }, { 55.18, 7.2, 44.98 } });
 
-    AlgebraTAU::matrix<double> N({ { 4.0, 0.0, 4.0 }, { 1.0, 2.0, -1.0 }, { 1.0, -1.0, -1.0 } });
+    AlgebraTAU::matrix<double> res({ { 4.0, 0.0, 4.0 }, { 1.0, 2.0, -1.0 }, { 1.0, -1.0, -1.0 } });
 
-    gram_schmidt(M);
-    M -= N;
-    M.map([](const double& x) { return fabs(x) < epsilon ? 0 : x; });
+    gram_schmidt(B);
+    B -= res;
+    B.map([](const double& x) { return abs(x) < epsilon ? 0 : x; });
 
-    EXPECT_EQ(M, AlgebraTAU::matrix<double>(3, 3));
+    EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3));
 }
 
 TEST(AdvanceAlgebraicOperations, LLL)
 {
+    using std::abs;
     AlgebraTAU::matrix<double> B({ { 1.0, 1.0, 1.0 }, { -1.0, 0.0, 2.0 }, { 3.0, 5.0, 6.0 } });
 
     AlgebraTAU::matrix<double> res({ { 0.0, 1.0, 0.0 }, { 1.0, 0.0, 1.0 }, { -1.0, 0.0, 2.0 } });
 
     AlgebraTAU::LLL(B, 0.75);
     B -= res;
-    B.map([](const double& x) { return fabs(x) < epsilon ? 0 : x; });
-
+    B.map([](const double& x) { return abs(x) < epsilon ? 0 : x; });
     EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3));
 }
 

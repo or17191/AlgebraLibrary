@@ -2,7 +2,7 @@
 #define MARIX_H
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <vector>
