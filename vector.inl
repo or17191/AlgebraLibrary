@@ -1,24 +1,41 @@
 namespace AlgebraTAU
 {
-template <orientation O, typename T> template <typename F> void vector<O, T>::map(const F& f)
+template <orientation O, typename T>
+template <typename F>
+void vector<O, T>::map(const F& f)
 {
     for (int i = 0; i < size(); ++i)
         self(i) = f(self(i));
 }
 
-template <orientation O, typename T> vector<O, T> operator*(const T& b, const vector<O, T>& a)
+template <orientation O, typename T>
+vector<orientation(!O), T> vector<O, T>::transpose() const
+{
+    return vector<orientation(!O), T>(arr);
+}
+
+template <orientation O, typename T>
+T vector<O, T>::norm() const
+{
+    return dot(self, self);
+}
+
+template <orientation O, typename T>
+vector<O, T> operator*(const T& b, const vector<O, T>& a)
 {
     return a * b;
 }
 
-template <orientation O, typename T> vector<O, T>& vector<O, T>::operator*=(const T& a)
+template <orientation O, typename T>
+vector<O, T>& vector<O, T>::operator*=(const T& a)
 {
     for (int i = 0; i < size(); ++i)
         self(i) *= a;
     return self;
 }
 
-template <orientation O, typename T> vector<O, T> vector<O, T>::operator*(const T& a) const
+template <orientation O, typename T>
+vector<O, T> vector<O, T>::operator*(const T& a) const
 {
     auto res = self;
     res *= a;
@@ -59,7 +76,8 @@ vector<O, T> vector<O, T>::operator-(const vector<O, T>& other) const
     return res;
 }
 
-template <orientation O, typename T> vector<O, T> vector<O, T>::operator-() const
+template <orientation O, typename T>
+vector<O, T> vector<O, T>::operator-() const
 {
     auto res = self;
     for (int i = 0; i < size(); ++i)
@@ -67,22 +85,26 @@ template <orientation O, typename T> vector<O, T> vector<O, T>::operator-() cons
     return res;
 }
 
-template <orientation O, typename T> size_t vector<O, T>::size() const
+template <orientation O, typename T>
+size_t vector<O, T>::size() const
 {
     return arr.size();
 }
 
-template <orientation O, typename T> const T& vector<O, T>::operator()(size_t i) const
+template <orientation O, typename T>
+const T& vector<O, T>::operator()(size_t i) const
 {
     return arr[i];
 }
 
-template <orientation O, typename T> T& vector<O, T>::operator()(size_t i)
+template <orientation O, typename T>
+T& vector<O, T>::operator()(size_t i)
 {
     return arr[i];
 }
 
-template <typename T> vector<row, T> operator*(const vector<row, T>& v, const matrix<T>& mat)
+template <typename T>
+vector<row, T> operator*(const vector<row, T>& v, const matrix<T>& mat)
 {
     if (v.size() != mat.rows())
         throw std::invalid_argument("matrix and vector dimensions doesn't agree");
@@ -94,7 +116,8 @@ template <typename T> vector<row, T> operator*(const vector<row, T>& v, const ma
     return res;
 }
 
-template <typename T> vector<row, T>& operator*=(vector<row, T>& v, const matrix<T>& mat)
+template <typename T>
+vector<row, T>& operator*=(vector<row, T>& v, const matrix<T>& mat)
 {
     if (v.size() != mat.rows())
         throw std::invalid_argument("matrix and vector dimensions doesn't agree");
@@ -102,17 +125,20 @@ template <typename T> vector<row, T>& operator*=(vector<row, T>& v, const matrix
     return v;
 }
 
-template <orientation O, typename T> vector<O, T>::vector(size_t size, const T& a) : arr(size, a)
+template <orientation O, typename T>
+vector<O, T>::vector(size_t size, const T& a) : arr(size, a)
 {
     if (size == 0) throw std::invalid_argument("can't create empty vectors");
 }
 
-template <orientation O, typename T> vector<O, T>::vector(const std::vector<T>& _arr) : arr(_arr)
+template <orientation O, typename T>
+vector<O, T>::vector(const std::vector<T>& _arr) : arr(_arr)
 {
     if (size() == 0) throw std::invalid_argument("can't create empty vectors");
 }
 
-template <orientation O, typename T> T dot(const vector<O, T>& a, const vector<O, T>& b)
+template <orientation O, typename T>
+T dot(const vector<O, T>& a, const vector<O, T>& b)
 {
     if (a.size() != b.size()) throw std::invalid_argument("vectos must have same shapes");
     T res = 0;
@@ -127,7 +153,8 @@ vector<O, T> project(const vector<O, T>& a, const vector<O, T>& b)
     return (dot(a, b) / dot(b, b)) * b;
 }
 
-template <orientation O, typename T> bool vector<O, T>::operator==(const vector& other) const
+template <orientation O, typename T>
+bool vector<O, T>::operator==(const vector& other) const
 {
     if (size() != other.size()) return false;
     for (int i = 0; i < size(); ++i)
@@ -135,7 +162,8 @@ template <orientation O, typename T> bool vector<O, T>::operator==(const vector&
     return true;
 }
 
-template <orientation O, typename T> bool vector<O, T>::operator!=(const vector<O, T>& other) const
+template <orientation O, typename T>
+bool vector<O, T>::operator!=(const vector<O, T>& other) const
 {
     return !(self == other);
 }

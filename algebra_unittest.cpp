@@ -4,6 +4,8 @@
 #include <iostream>
 #include <math.h>
 
+#define epsilon 1e-12
+
 TEST(MatrixOperators, MatrixNEQ)
 {
     AlgebraTAU::matrix<double> M1({ { 8, 5, 5, 9, 7 }, { 9, 1, 2, 2, 5 }, { 8, 0, 7, 4, 7 }, { 6, 9, 1, 9, 2 } });
@@ -12,6 +14,29 @@ TEST(MatrixOperators, MatrixNEQ)
 
     EXPECT_TRUE(M1 != M2);
 }
+
+
+TEST(MatrixMethods, Trace)
+{
+    AlgebraTAU::matrix<double> M({ { -0.0854, 1.6716, 0.1758, -1.2143 },
+                                   { 1.2778, -0.0499, -0.3119, 1.463 },
+                                   { -1.5792, 0.5309, -0.1214, -1.7437 },
+                                   { 1.0288, 0.53, 0.4327, 1.0181 } });
+    double d = M.trace();
+    EXPECT_TRUE(abs(d - 0.7614) < epsilon);
+}
+
+TEST(AdvanceAlgebraicOperations, Determinant)
+{
+    AlgebraTAU::matrix<double> M({ { -0.0854, 1.6716, 0.1758, -1.2143 },
+                                   { 1.2778, -0.0499, -0.3119, 1.463 },
+                                   { -1.5792, 0.5309, -0.1214, -1.7437 },
+                                   { 1.0288, 0.53, 0.4327, 1.0181 } });
+    double d = M.det();
+    d = abs(d - 0.7691640753933907);
+    EXPECT_TRUE(d < epsilon);
+}
+
 
 TEST(MatrixOperators, MatrixEQ)
 {
@@ -87,7 +112,7 @@ TEST(AdvanceAlgebraicOperations, GramSchmidt)
 
     gram_schmidt(M);
     M -= N;
-    M.map([](const double& x) { return fabs(x) < 1e-7 ? 0 : x; });
+    M.map([](const double& x) { return fabs(x) < epsilon ? 0 : x; });
 
     EXPECT_EQ(M, AlgebraTAU::matrix<double>(3, 3, 0));
 }
@@ -100,10 +125,11 @@ TEST(AdvanceAlgebraicOperations, LLL)
 
     AlgebraTAU::LLL(B, 0.75);
     B -= res;
-    B.map([](const double& x) { return fabs(x) < 1e-7 ? 0 : x; });
+    B.map([](const double& x) { return fabs(x) < epsilon ? 0 : x; });
 
     EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3, 0));
 }
+
 
 int main(int argc, char const* argv[])
 {
