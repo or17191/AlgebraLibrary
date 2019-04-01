@@ -1,8 +1,8 @@
 #ifndef MARIX_H
 #define MARIX_H
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -123,6 +123,10 @@ class matrix
 
 // read_JSON(std::istream &IS);        // Not implemented
 // write_JSON(std::ostream &OS) const; // Not implemented
+
+// left scalar multiplication
+template <typename T>
+matrix<T> operator*(const T& b, const matrix<T>& a);
 
 // preforms in place, row-wise, gaussian elimination of matrix m
 template <typename T>

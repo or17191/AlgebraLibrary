@@ -1,11 +1,11 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <cmath>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <cmath>
 
 #include "base.h"
 
@@ -90,12 +90,15 @@ vector<row, T> operator*(const vector<row, T>& vec, const matrix<T>& mat);
 template <typename T>
 vector<row, T> operator*=(vector<row, T>&, const matrix<T>& mat);
 
+// calculates the dot product of vectors a,b
 template <orientation O, typename T>
 T dot(const vector<O, T>& a, const vector<O, T>& b);
 
+// calculates the projection of vector a on vector b
 template <orientation O, typename T>
 vector<O, T> project(const vector<O, T>& a, const vector<O, T>& b);
 
+// left scalar multiplication
 template <orientation O, typename T>
 vector<O, T> operator*(const T& b, const vector<O, T>& a);
 

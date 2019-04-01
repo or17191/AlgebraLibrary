@@ -1,8 +1,8 @@
 #include "matrix.h"
 #include "vector.h"
+#include <cmath>
 #include <gtest/gtest.h>
 #include <iostream>
-#include <cmath>
 
 #define epsilon 1e-12
 

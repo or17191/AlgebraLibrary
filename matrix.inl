@@ -3,6 +3,12 @@ namespace AlgebraTAU
 {
 
 template <typename T>
+matrix<T> operator*(const T& b, const matrix<T>& a)
+{
+    return a * b;
+}
+
+template <typename T>
 vector<row, T> matrix<T>::get_row(int i) const
 {
     if (i > rows()) throw std::invalid_argument("index out of range");
@@ -189,7 +195,7 @@ matrix<T> matrix<T>::operator*(const T& a) const
 template <typename T>
 void LLL(matrix<T>& m, const T& delta)
 {
-    
+
     using std::abs;
     int n = m.rows() - 1;
     int dim = m.columns();
@@ -211,7 +217,6 @@ void LLL(matrix<T>& m, const T& delta)
                 m.set_row(k, m.get_row(k) - round(mu(k, j)) * m.get_row(j));
                 ortho = m;
                 gram_schmidt(ortho);
-
             }
         }
 
