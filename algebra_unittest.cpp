@@ -130,10 +130,3 @@ TEST(AdvanceAlgebraicOperations, LLL)
     B.map([](const double& x) { return abs(x) < epsilon ? 0 : x; });
     EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3));
 }
-
-
-int main(int argc, char const* argv[])
-{
-    testing::InitGoogleTest(&argc, (char**)(argv));
-    return RUN_ALL_TESTS();
-}

@@ -1,8 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 # Make PROJECT_SOURCE_DIR, PROJECT_BINARY_DIR, and PROJECT_NAME available.
 set(PROJECT_NAME AlgebraProject)
 project(${PROJECT_NAME})
+
+include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+conan_basic_setup(TARGETS NO_OUTPUT_DIRS)
 
 set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11")
 
@@ -11,12 +14,8 @@ if (APPLE)
 	add_definitions(-D__GLIBCXX__)
 endif (APPLE)
 
-add_subdirectory(lib/gtest-1.6.0)
-
 enable_testing()
-
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 add_executable(runUnitTests algebra_unittest.cpp )
 
-target_link_libraries(runUnitTests gtest gtest_main)
+target_link_libraries(runUnitTests CONAN_PKG::gtest)
