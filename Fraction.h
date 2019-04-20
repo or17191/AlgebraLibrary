@@ -125,7 +125,6 @@ class Fraction
     CryptoPP::Integer round() const;
 };
 
-
 Fraction operator*(const Fraction& f1, const Fraction& f2)
 {
     Fraction res = f1;
@@ -213,7 +212,6 @@ CryptoPP::Integer Fraction::round() const
 }
 
 }; // namespace AlgebraTAU
-
 
 std::ostream& operator<<(std::ostream& os, const AlgebraTAU::Fraction& f)
 {

@@ -280,7 +280,6 @@ matrix<T>::matrix(const std::initializer_list<std::initializer_list<T2>>& _arr)
             arr[i++] = T(x);
 }
 
-
 template <typename T>
 template <typename T2>
 matrix<T>::matrix(const std::vector<std::vector<T2>>& _arr)
@@ -302,7 +301,6 @@ matrix<T>::matrix(const std::vector<std::vector<T2>>& _arr)
         for (const T2& x : v)
             arr[i++] = T(x);
 }
-
 
 template <typename T>
 size_t matrix<T>::rows() const

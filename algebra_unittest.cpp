@@ -17,7 +17,6 @@ TEST(MatrixOperators, MatrixNEQ)
     EXPECT_TRUE(M1 != M2);
 }
 
-
 TEST(MatrixMethods, Trace)
 {
     AlgebraTAU::matrix<double> M({ { -0.0854, 1.6716, 0.1758, -1.2143 },
@@ -38,7 +37,6 @@ TEST(AdvanceAlgebraicOperations, Determinant)
     d = abs(d - 0.7691640753933907);
     EXPECT_TRUE(d < epsilon);
 }
-
 
 TEST(MatrixOperators, MatrixEQ)
 {

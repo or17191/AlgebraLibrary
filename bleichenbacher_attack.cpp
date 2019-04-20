@@ -137,7 +137,6 @@ class Attacker
     const Server& srv;
     const Integer& c;
 
-
     protected:
     Logger clog;
     const Integer& n;
@@ -166,7 +165,6 @@ class Attacker
     {
         return clog.debug(t);
     }
-
 
     void reset()
     {
@@ -527,7 +525,6 @@ class MultiThreadAttack
         const Integer& n = srv->publicKey.GetModulus();
         CryptoPP::ModularArithmetic modN = n;
 
-
         for (int i = 0; i < number_of_blindings; ++i)
         {
             B(0, i) = blindings[i];
@@ -595,9 +592,7 @@ int main(int argc, char* argv[])
     }
     std::clog << "Main debug: running time " << lap(begin_time) << std::endl;
 
-
     std::clog.rdbuf(clogbuf); // returning std::clog to it's intital position
-
 
     return 0;
 }
