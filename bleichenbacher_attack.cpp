@@ -529,6 +529,10 @@ int main(int argc, char* argv[])
         {-1,0,2},
         {3,5,6}
     });
+
+    std::cout << B << std::endl << std::endl;
+    AlgebraTAU::LLL(B,{3,4});
+    std::cout << B << std::endl << std::endl;
     
 
     exit(1);

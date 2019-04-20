@@ -3,6 +3,7 @@
 
 #include "base.h"
 #include <iostream>
+#include <sstream>
 #include <cryptopp/integer.h>
 
 namespace AlgebraTAU{
@@ -20,6 +21,10 @@ class Fraction{
     }
 
 public:
+
+    Fraction(const int64_t& a, const int64_t& b = 1) : a(a) , b(b) {
+
+    } 
 
     Fraction(const CryptoPP::Integer& a = 0, const CryptoPP::Integer& b = 1) : a(a), b(b){
         fix();
@@ -60,8 +65,8 @@ public:
     
     Fraction& operator-=(const Fraction& o){
         a *= o.b;
-        b *= o.b;
         a -= o.a * b;
+        b *= o.b;
         fix();
         return *this;
     }
@@ -70,30 +75,6 @@ public:
         a.Negate();
         fix();
         return *this;
-    }
-
-    Fraction operator*(const Fraction& o) const {
-        Fraction res = *this;
-        res *= o;
-        return res;
-    }
-
-    Fraction operator/(const Fraction& o) const {
-        Fraction res = *this;
-        res /= o;
-        return res;
-    }
-
-    Fraction operator+(const Fraction& o) const {
-        Fraction res = *this;
-        res += o;
-        return res;
-    }
-
-    Fraction operator-(const Fraction& o) const {
-        Fraction res = *this;
-        res -= o;
-        return res;
     }
 
     Fraction operator-() const {
@@ -114,39 +95,98 @@ public:
         return a.IsPositive();
     }
 
-    bool operator<(const Fraction& o) const {
-        return (*this - o).IsNegative();
+    Fraction AbsoluteValue() const {
+        Fraction res = *this;
+        if(res.IsNegative()) res.Negate();
+        return res;
     }
 
-    bool operator>(const Fraction& o) const {
-        return (o - *this).IsNegative();
+    std::ostream& print(std::ostream& os) const {
+        return os << a << "/" << b;
     }
 
-    bool operator<=(const Fraction& o) const {
-        return !(*this > o);
-    }
-    
-    bool operator>=(const Fraction& o) const {
-        return !(*this < o);
-    }   
-
-    bool operator==(const Fraction& o) const {
-        return a == o.a && b == o.b;
-    }
-
-    bool operator!=(const Fraction& o) const {
-        return a != o.a || b != o.b;
-    }
-
-    void print(std::ostream& os) const {
-        os << a << "/" << b;
-    }
+    CryptoPP::Integer round() const ;
 };
+
+
+Fraction operator*(const Fraction& f1, const Fraction& f2)  {
+    Fraction res = f1;
+    res *= f2;
+    return res;
+}
+
+Fraction operator/(const Fraction& f1, const Fraction& f2)  {
+    Fraction res = f1;
+    res /= f2;
+    return res;
+}
+
+Fraction operator+(const Fraction& f1, const Fraction& f2)  {
+    Fraction res = f1;
+    res += f2;
+    return res;
+}
+
+Fraction operator-(const Fraction& f1, const Fraction& f2)  {
+    Fraction res = f1;
+    res -= f2;
+    return res;
+}
+
+bool operator<(const Fraction& f1, const Fraction& f2)  {
+    return (f1 - f2).IsNegative();
+}
+
+bool operator>(const Fraction& f1, const Fraction& f2)  {
+    return (f2 - f1).IsNegative();
+}
+
+bool operator<=(const Fraction& f1, const Fraction& f2)  {
+    return !(f2 > f1);
+}
+
+bool operator>=(const Fraction& f1, const Fraction& f2)  {
+    return !(f1 < f2);
+}   
+
+bool operator==(const Fraction& f1, const Fraction& f2)  {
+    return (f1-f2).IsZero();
+}
+
+bool operator!=(const Fraction& f1, const Fraction& f2) {
+    return !(f1 == f2);
+}
+
+std::string to_string(const Fraction& f){
+    std::stringstream ss;
+    f.print(ss);
+    return ss.str();
+}
+
+Fraction abs(const Fraction& f) { 
+    return f.AbsoluteValue();
+}
+
+CryptoPP::Integer round(const Fraction& f) { 
+    return f.round();
+}
+
+CryptoPP::Integer Fraction::round() const {
+    CryptoPP::Integer res = a / b;
+    Fraction x = (*this - res);
+
+    if(x.AbsoluteValue() >= 1) throw std::runtime_error("algorithmic impossibility");
+    if(x < Fraction(-1,2)) return res-1;
+    if(x < Fraction(1,2)) return res;
+    return res + 1;
+}
+
 };
+
+
 
 std::ostream& operator<<(std::ostream& os, const AlgebraTAU::Fraction& f){
-    f.print(os);
-    return os;
+    return f.print(os);
 }
 
 #endif

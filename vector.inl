@@ -181,6 +181,8 @@ template <orientation O, typename T>
 std::ostream& operator<<(std::ostream& out, const vector<O, T>& v)
 {
     using std::to_string;
+    using AlgebraTAU::to_string;
+    
     std::string res = "";
 
     res += "(";

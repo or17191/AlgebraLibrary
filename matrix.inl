@@ -197,8 +197,10 @@ void LLL(matrix<T>& m, const T& delta)
 {
 
     using std::abs;
+    
     int n = m.rows() - 1;
     int dim = m.columns();
+    //TODO fix!
     vector<row, T> vec(dim, 0);
     matrix<T> ortho = m;
     gram_schmidt(ortho);
@@ -214,13 +216,13 @@ void LLL(matrix<T>& m, const T& delta)
         {
             if (2 * abs(mu(k, j)) > 1)
             {
-                m.set_row(k, m.get_row(k) - round(mu(k, j)) * m.get_row(j));
+                m.set_row(k, m.get_row(k) - T(round(mu(k, j))) * m.get_row(j));
                 ortho = m;
                 gram_schmidt(ortho);
             }
         }
 
-        if (ortho.get_row(k).norm() >= (delta - pow(mu(k, k - 1), 2)) * ortho.get_row(k - 1).norm())
+        if (ortho.get_row(k).norm() >= (delta - sqaure(mu(k, k - 1))) * ortho.get_row(k - 1).norm())
         {
             k = k + 1;
         }
@@ -437,6 +439,8 @@ template <typename T>
 std::ostream& operator<<(std::ostream& out, const matrix<T>& m)
 {
     using std::to_string;
+    using AlgebraTAU::to_string;
+    
     std::string res = "";
 
     for (int i = 0; i < m.rows(); ++i)
