@@ -197,10 +197,10 @@ void LLL(matrix<T>& m, const T& delta)
 {
 
     using std::abs;
-    
+
     int n = m.rows() - 1;
     int dim = m.columns();
-    //TODO fix!
+    // TODO fix!
     vector<row, T> vec(dim, 0);
     matrix<T> ortho = m;
     gram_schmidt(ortho);
@@ -438,9 +438,9 @@ T matrix<T>::trace() const
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const matrix<T>& m)
 {
-    using std::to_string;
     using AlgebraTAU::to_string;
-    
+    using std::to_string;
+
     std::string res = "";
 
     for (int i = 0; i < m.rows(); ++i)

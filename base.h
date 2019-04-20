@@ -9,9 +9,10 @@ namespace AlgebraTAU
 class Fraction;
 std::string to_string(const Fraction& f);
 
-template<typename T>
-inline T sqaure(const T& t){
-    return t*t;
+template <typename T>
+inline T sqaure(const T& t)
+{
+    return t * t;
 }
 
 enum orientation

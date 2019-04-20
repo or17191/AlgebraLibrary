@@ -29,13 +29,13 @@ class matrix
     // constructs matrix given data _arr, _arr is a row-wise representation
     // throws std::invalid_argument if _arr is empty
     // throws std::invalid_argument if not all rows in _arr are of same size
-    template<typename T2>
+    template <typename T2>
     matrix(const std::initializer_list<std::initializer_list<T2>>& _arr);
 
     // constructs matrix given data vector _arr, _arr is a row-wise representation
     // throws std::invalid_argument if _arr is empty
     // throws std::invalid_argument if not all rows in _arr are of same size
-    template<typename T2>
+    template <typename T2>
     matrix(const std::vector<std::vector<T2>>& _arr);
 
     // returns the number of rows in the matrix

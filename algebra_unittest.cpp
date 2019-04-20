@@ -1,6 +1,6 @@
+#include "Fraction.h"
 #include "matrix.h"
 #include "vector.h"
-#include "Fraction.h"
 
 #include <cmath>
 #include <gtest/gtest.h>
@@ -138,7 +138,7 @@ TEST(AdvanceAlgebraicOperations, LLL_with_fraction)
     using std::abs;
     AlgebraTAU::matrix<AlgebraTAU::Fraction> B({ { 1, 1, 1 }, { -1, 0, 2 }, { 3, 5, 6 } });
     AlgebraTAU::matrix<AlgebraTAU::Fraction> res({ { 0, 1, 0 }, { 1, 0, 1 }, { -1, 0, 2 } });
-    AlgebraTAU::LLL(B, AlgebraTAU::Fraction(3,4));
+    AlgebraTAU::LLL(B, AlgebraTAU::Fraction(3, 4));
 
     EXPECT_EQ(B, res);
 }

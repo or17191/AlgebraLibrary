@@ -23,10 +23,10 @@ class vector
     // throws std::invalid_argument if rows == 0 or columns == 0
     vector(size_t size, const T& x = {});
 
-    template<typename T2>
+    template <typename T2>
     vector(const std::initializer_list<T2>& _arr);
 
-    template<typename T2>
+    template <typename T2>
     vector(const std::vector<T2>& _arr);
 
     // returns the size of the vector

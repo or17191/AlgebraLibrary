@@ -180,9 +180,9 @@ bool vector<O, T>::operator!=(const vector<O, T>& other) const
 template <orientation O, typename T>
 std::ostream& operator<<(std::ostream& out, const vector<O, T>& v)
 {
-    using std::to_string;
     using AlgebraTAU::to_string;
-    
+    using std::to_string;
+
     std::string res = "";
 
     res += "(";

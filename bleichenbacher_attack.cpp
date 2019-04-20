@@ -3,21 +3,21 @@
 #include <cryptopp/osrng.h>
 #include <cryptopp/rsa.h>
 
+#include <chrono>
 #include <exception>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <mutex>
 #include <thread>
-#include <chrono>
 #include <vector>
 
+#include "Fraction.h"
 #include "matrix.h"
 #include "vector.h"
-#include "Fraction.h"
 
-using CryptoPP::Integer;
 using AlgebraTAU::Fraction;
-const int max_message_count = 5000;
+using CryptoPP::Integer;
+const int max_message_count = 20000;
 typedef std::pair<Integer, Integer> II;
 
 inline Integer div_ceil(const Integer& x, const Integer& y)
@@ -42,7 +42,7 @@ class Server
     }
 
     Server(const Server& srv)
-    :  privateKey(srv.privateKey), keysize(srv.keysize),publicKey(srv.publicKey)
+    : privateKey(srv.privateKey), keysize(srv.keysize), publicKey(srv.publicKey)
     {
     }
 
@@ -153,8 +153,8 @@ class Attacker
 
     public:
     Attacker(const Server& srv, const Integer& c, const std::string& base_name, int limitation = max_message_count)
-    :  base_name(base_name),limitation(limitation), srv(srv),c(c),clog(std::clog), n(srv.publicKey.GetModulus()),
-       B(Integer::Power2(srv.publicKey.GetModulus().BitCount() - 16))
+    : base_name(base_name), limitation(limitation), srv(srv), c(c), clog(std::clog),
+      n(srv.publicKey.GetModulus()), B(Integer::Power2(srv.publicKey.GetModulus().BitCount() - 16))
     {
     }
 
@@ -174,23 +174,6 @@ class Attacker
         clog.set_name(base_name + " (" + std::to_string(id++) + ")");
         message_counter = 0;
         debug() << "Beginning" << std::endl;
-    }
-
-    std::string pkcs_decode(const Integer& m)
-    {
-        if (m.BitCount() != n.BitCount() - 14) throw std::invalid_argument("invalid message length");
-        std::vector<char> res;
-
-        int i;
-        for (i = m.ByteCount() - 2; i >= 0 && m.GetByte(i) != 0; --i)
-            ;
-        if (i < 0) return "";
-        --i;
-
-        for (; i >= 0; --i)
-            res.push_back(m.GetByte(i));
-        res.push_back(0);
-        return res.data();
     }
 };
 int Attacker::id = 1;
@@ -229,7 +212,7 @@ class RangeAttacker : public Attacker
     {
         public:
         std::vector<II> arr;
-       
+
         // turn the set of non-disjoint intervals in "arr" to a set of disjoint intervals
         void sort()
         {
@@ -311,28 +294,32 @@ class RangeAttacker : public Attacker
     {
     }
 
-    void attack() {
+    void attack()
+    {
         M.insert(2 * B, 3 * B - 1);
-        s = div_ceil(n,3*B);
-        incremental_search(); //step 2.a
+        s = div_ceil(n, 3 * B);
+        incremental_search(); // step 2.a
         debug() << "finished step 2.a" << std::endl;
 
-        for(int i = 1; M.size() > 0; ++i){
-            if(i != 1 && M.count() > 1){
+        for (int i = 1; M.size() > 0; ++i)
+        {
+            if (i != 1 && M.count() > 1)
+            {
                 ++s;
                 incremental_search();
-                if(i % 100 == 0) debug() << "finished step 2.b for i=" << i << std::endl;
+                if (i % 100 == 0) debug() << "finished step 2.b for i=" << i << std::endl;
             }
-            else if (i != 1 && M.count() == 1){
+            else if (i != 1 && M.count() == 1)
+            {
                 repivot();
-                if(i % 100 == 0) debug() << "finished step 2.c for i=" << i << std::endl;
+                if (i % 100 == 0) debug() << "finished step 2.c for i=" << i << std::endl;
             }
             interval_divsion();
         }
-
     }
-    
-    II result(){
+
+    II result()
+    {
         return M.enclose();
     }
 
@@ -386,7 +373,7 @@ class MultiThreadAttack
         static MultiThreadAttack instance;
         return instance;
     }
-    
+
     private:
     // singelton design pattern
     MultiThreadAttack()
@@ -400,17 +387,42 @@ class MultiThreadAttack
     const Server* srv;
     const Integer* c;
 
-    const int thread_num = std::max(int(std::thread::hardware_concurrency()),1);
-    
+    const int thread_num = std::max(int(std::thread::hardware_concurrency()), 1);
+
     int number_of_blindings;
 
     std::atomic_bool finish_blinding;
     std::mutex blindings_mutex;
     std::vector<Integer> blindings;
-    
+
     int current_range;
     std::vector<II> ranges;
     std::mutex current_range_mutex;
+
+    Integer m;
+
+    std::string pkcs_decode(const Integer& m) const
+    {
+        int sz = m.ByteCount();
+        if (sz * 8 != srv->publicKey.GetModulus().BitCount() - 8)
+            throw std::invalid_argument("invalid message length");
+        if (m.GetByte(sz - 1) != 2) throw std::invalid_argument("invalid message padding");
+        for (int i = sz - 2; i > sz - 10; --i)
+            if (m.GetByte(i) == 0) throw std::invalid_argument("invalid message padding");
+
+        std::vector<char> res;
+
+        int i;
+        for (i = m.ByteCount() - 2; i >= 0 && m.GetByte(i) != 0; --i)
+            ;
+        if (i < 0) throw std::invalid_argument("empty message");
+        --i;
+
+        for (; i >= 0; --i)
+            res.push_back(m.GetByte(i));
+        res.push_back(0);
+        return res.data();
+    }
 
     static void blinding_thread()
     {
@@ -451,16 +463,18 @@ class MultiThreadAttack
                 std::lock_guard<std::mutex> lock(MTA.current_range_mutex);
                 i = MTA.current_range++;
             }
-            if(i >= MTA.number_of_blindings) break;
-            
-            c0 = MTA.srv->publicKey.ApplyFunction(MTA.blindings[i]).Times(*MTA.c).Modulo(MTA.srv->publicKey.GetModulus());
+            if (i >= MTA.number_of_blindings) break;
+
+            c0 = MTA.srv->publicKey.ApplyFunction(MTA.blindings[i])
+                 .Times(*MTA.c)
+                 .Modulo(MTA.srv->publicKey.GetModulus());
             RangeAttacker attacker(*MTA.srv, c0);
-            
+
             try
             {
                 attacker.reset();
                 attacker.attack();
-                attacker.debug() << "Found final value!" << std::endl; 
+                attacker.debug() << "Found final value!" << std::endl;
             }
             catch (std::exception& e)
             {
@@ -471,8 +485,8 @@ class MultiThreadAttack
     }
 
     public:
-
-    void set_params(const Server& srv, const Integer& c,int number_of_blindings){
+    void set_params(const Server& srv, const Integer& c, int number_of_blindings)
+    {
         this->srv = &srv;
         this->c = &c;
         this->number_of_blindings = number_of_blindings;
@@ -482,38 +496,65 @@ class MultiThreadAttack
         ranges = std::vector<II>(number_of_blindings);
     }
 
-    void get_blindings()
+    void calc_blindings()
     {
         std::vector<std::thread> threads;
         for (int i = 1; i < thread_num; ++i)
             threads.push_back(std::thread(blinding_thread));
         blinding_thread();
-        
+
         for (auto& t : threads)
-            if (t.joinable())
-                t.join();
+            if (t.joinable()) t.join();
         finish_blinding = true;
     }
 
-    void get_ranges(){
+    void calc_ranges()
+    {
         std::vector<std::thread> threads;
         for (int i = 1; i < thread_num; ++i)
             threads.push_back(std::thread(range_thread));
         range_thread();
 
         for (auto& t : threads)
-            if (t.joinable())
-                t.join();
+            if (t.joinable()) t.join();
         current_range = ranges.size();
+    }
+
+    void calc_result()
+    {
+        using namespace AlgebraTAU;
+        matrix<Fraction> B(number_of_blindings + 1, number_of_blindings + 1, 0);
+        const Integer& n = srv->publicKey.GetModulus();
+        CryptoPP::ModularArithmetic modN = n;
+
+
+        for (int i = 0; i < number_of_blindings; ++i)
+        {
+            B(0, i) = blindings[i];
+            B(i + 1, i) = n;
+            B(number_of_blindings, i) = ranges[i].first;
+        }
+        B(number_of_blindings, number_of_blindings) =
+        Fraction(n * (number_of_blindings - 1), number_of_blindings);
+        LLL(B, Fraction(3, 4));
+
+        Integer r0 = B(1, 0).round(), a0 = ranges[0].first, s0 = blindings[0];
+        this->m = modN.Multiply(modN.Add(r0, a0), modN.Inverse(s0));
+    }
+
+    std::string get_result() const
+    {
+        return pkcs_decode(m);
     }
 };
 
 std::string lap(const std::chrono::steady_clock::time_point& begin)
 {
-    using std::chrono::steady_clock;
     using std::to_string;
+    using std::chrono::steady_clock;
 
-    int seconds = ((steady_clock::now()-begin).count() * steady_clock::period::num) / steady_clock::period::den;
+    int seconds =
+    ((steady_clock::now() - begin).count() * steady_clock::period::num) / steady_clock::period::den;
     int hours = seconds / 3600;
     int minutes = (seconds % 3600) / 60;
     seconds %= 60;
@@ -522,42 +563,41 @@ std::string lap(const std::chrono::steady_clock::time_point& begin)
 
 int main(int argc, char* argv[])
 {
+    std::streambuf* clogbuf = std::clog.rdbuf();
+    ; // save old buf
+    std::clog.rdbuf(std::cout.rdbuf()); // redirect std::clog to std::cout to suupport ouput to file
 
-    Fraction f(1,2),g(2,3);
-    AlgebraTAU::matrix<Fraction> B({
-        {1,1,1},
-        {-1,0,2},
-        {3,5,6}
-    });
-
-    std::cout << B << std::endl << std::endl;
-    AlgebraTAU::LLL(B,{3,4});
-    std::cout << B << std::endl << std::endl;
-    
-
-    exit(1);
-    
-    //std::ofstream out("log1.txt");
-    //std::streambuf *coutbuf = std::clog.rdbuf(); //save old buf
-    //std::clog.rdbuf(out.rdbuf()); //redirect std::clog to log.txt
-
+    // setting up server to be attacked
     Server srv(2048);
     Integer c = srv.pkcs_encrypt("He11o w0r1d! My n4me is 0fer! This is my secret");
-    
+
+    // logging attack beggining
     std::clog << "Main debug: ";
     std::clog << "keysize=" << srv.publicKey.GetModulus().BitCount();
     std::clog << ", attacker killed after " << max_message_count << " messages" << std::endl;
 
-
-
+    // begining attack
     auto begin_time = std::chrono::steady_clock::now();
-
     auto& MTA = MultiThreadAttack::get_instance();
-    MTA.set_params(srv,c,2);
-    MTA.get_blindings();
-    MTA.get_ranges();
-
+    MTA.set_params(srv, c, 20);
+    MTA.calc_blindings();
+    MTA.calc_ranges();
+    MTA.calc_result();
+    // outputting the result of the attack
+    try
+    {
+        std::string result = MTA.get_result();
+        std::clog << "Main debug: final result \'" << result << "\"" << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::clog << "Main debug: algorithm failed, error " << e.what() << std::endl;
+    }
     std::clog << "Main debug: running time " << lap(begin_time) << std::endl;
+
+
+    std::clog.rdbuf(clogbuf); // returning std::clog to it's intital position
+
 
     return 0;
 }
