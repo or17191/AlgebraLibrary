@@ -16,6 +16,7 @@ endif (APPLE)
 
 enable_testing()
 
-add_executable(runAttack bleichenbacher_attack.cpp )
+add_executable(runUnitest algebra_unittest.cpp )
 
-target_link_libraries(runAttack CONAN_PKG::cryptopp)
+target_link_libraries(runUnitest CONAN_PKG::gtest)
+target_link_libraries(runUnitest CONAN_PKG::cryptopp)

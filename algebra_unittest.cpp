@@ -1,5 +1,7 @@
 #include "matrix.h"
 #include "vector.h"
+#include "Fraction.h"
+
 #include <cmath>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -89,7 +91,7 @@ TEST(VectorOperators, Transpose)
 TEST(VectorOperators, ScalarMultiplication)
 {
     AlgebraTAU::vector<AlgebraTAU::row, double> v({ 1, 2, 3, 4 });
-    AlgebraTAU::vector<AlgebraTAU::row, double> res({ 2.5, 5, 7.5, 10 });
+    AlgebraTAU::vector<AlgebraTAU::row, double> res({ 2.5, 5.0, 7.5, 10.0 });
     v *= 2.5;
 
     EXPECT_EQ(v, res);
@@ -129,4 +131,14 @@ TEST(AdvanceAlgebraicOperations, LLL)
     B -= res;
     B.map([](const double& x) { return abs(x) < epsilon ? 0 : x; });
     EXPECT_EQ(B, AlgebraTAU::matrix<double>(3, 3));
+}
+
+TEST(AdvanceAlgebraicOperations, LLL_with_fraction)
+{
+    using std::abs;
+    AlgebraTAU::matrix<AlgebraTAU::Fraction> B({ { 1, 1, 1 }, { -1, 0, 2 }, { 3, 5, 6 } });
+    AlgebraTAU::matrix<AlgebraTAU::Fraction> res({ { 0, 1, 0 }, { 1, 0, 1 }, { -1, 0, 2 } });
+    AlgebraTAU::LLL(B, AlgebraTAU::Fraction(3,4));
+
+    EXPECT_EQ(B, res);
 }
