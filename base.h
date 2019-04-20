@@ -6,6 +6,8 @@
 namespace AlgebraTAU
 {
 
+class Fraction;
+
 enum orientation
 {
     row = 0,

@@ -257,7 +257,8 @@ matrix<T>::matrix(size_t rows, size_t columns, const T& a)
 }
 
 template <typename T>
-matrix<T>::matrix(const std::initializer_list<std::initializer_list<T>>& _arr)
+template <typename T2>
+matrix<T>::matrix(const std::initializer_list<std::initializer_list<T2>>& _arr)
 {
     if (_arr.size() == 0) throw std::invalid_argument("can't create empty matrices");
 
@@ -273,13 +274,14 @@ matrix<T>::matrix(const std::initializer_list<std::initializer_list<T>>& _arr)
 
     int i = 0;
     for (const auto& v : _arr)
-        for (const T& x : v)
-            arr[i++] = x;
+        for (const T2& x : v)
+            arr[i++] = T(x);
 }
 
 
 template <typename T>
-matrix<T>::matrix(const std::vector<std::vector<T>>& _arr)
+template <typename T2>
+matrix<T>::matrix(const std::vector<std::vector<T2>>& _arr)
 {
     if (_arr.size() == 0) throw std::invalid_argument("can't create empty matrices");
 
@@ -295,8 +297,8 @@ matrix<T>::matrix(const std::vector<std::vector<T>>& _arr)
 
     int i = 0;
     for (const auto& v : _arr)
-        for (const T& x : v)
-            arr[i++] = x;
+        for (const T2& x : v)
+            arr[i++] = T(x);
 }
 
 

@@ -13,8 +13,10 @@
 
 #include "matrix.h"
 #include "vector.h"
+#include "Fraction.h"
 
 using CryptoPP::Integer;
+using AlgebraTAU::Fraction;
 const int max_message_count = 5000;
 typedef std::pair<Integer, Integer> II;
 
@@ -520,6 +522,16 @@ std::string lap(const std::chrono::steady_clock::time_point& begin)
 
 int main(int argc, char* argv[])
 {
+
+    Fraction f(1,2),g(2,3);
+    AlgebraTAU::matrix<Fraction> B({
+        {1,1,1},
+        {-1,0,2},
+        {3,5,6}
+    });
+    
+
+    exit(1);
     
     //std::ofstream out("log1.txt");
     //std::streambuf *coutbuf = std::clog.rdbuf(); //save old buf

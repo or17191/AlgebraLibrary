@@ -22,8 +22,12 @@ class vector
     // constructs matrix of shape rows x columns with default value = a
     // throws std::invalid_argument if rows == 0 or columns == 0
     vector(size_t size, const T& x = {});
-    vector(const std::initializer_list<T>& _arr);
-    vector(const std::vector<T>& _arr);
+
+    template<typename T2>
+    vector(const std::initializer_list<T2>& _arr);
+
+    template<typename T2>
+    vector(const std::vector<T2>& _arr);
 
     // returns the size of the vector
     inline size_t size() const;
